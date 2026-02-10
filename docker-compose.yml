@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  app:
+    build: .
+    container_name: diabetes_app
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://app:admin@192.168.1.81:5432/diabeticsdb
