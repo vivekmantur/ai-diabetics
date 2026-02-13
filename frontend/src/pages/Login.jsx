@@ -13,12 +13,16 @@ export default function Login({ onLogin }) {
     setError("");
 
     try {
-      const user = await loginByPhone(phone);
-      onLogin(user);
+        const data = await loginByPhone(phone);
+
+        localStorage.setItem("token", data.access_token);
+
+        onLogin(data.user);
     } catch {
-      setError("User not found. Please check your phone number.");
+        setError("User not found");
     }
-  };
+    };
+
 
   return (
     <div className="login-page">

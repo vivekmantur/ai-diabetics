@@ -1,8 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
+import { askChat } from "../api/chatApi";
+
 import "../styles/chat.css";
 
-export default function ChatBox({ userId }) {
+export default function ChatBox() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
@@ -13,16 +15,16 @@ export default function ChatBox({ userId }) {
     const userMsg = { role: "user", text: input };
     setMessages((m) => [...m, userMsg]);
 
-    const res = await fetch("http://localhost:8000/chat/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id: userId, question: input }),
-    });
+    try {
+      // 🔐 uses JWT automatically from chatApi.js
+      const data = await askChat(input);
 
-    const data = await res.json();
-
-    const botMsg = { role: "ai", text: data.answer }; // ⚠️ use "ai" not "bot"
-    setMessages((m) => [...m, botMsg]);
+      const botMsg = { role: "ai", text: data.answer };
+      setMessages((m) => [...m, botMsg]);
+    } catch (err) {
+      const errorMsg = { role: "ai", text: "❌ Failed to get AI response." };
+      setMessages((m) => [...m, errorMsg]);
+    }
 
     setInput("");
   };
@@ -55,6 +57,7 @@ export default function ChatBox({ userId }) {
             placeholder="Ask about diet, glucose, BMI..."
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
           />
           <button onClick={sendMessage}>Send</button>
         </div>

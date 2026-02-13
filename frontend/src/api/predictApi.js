@@ -1,15 +1,34 @@
-const BASE = "http://127.0.0.1:8000/predict";
+const BASE = "http://localhost:8000/predict";
 
+function getAuthHeaders() {
+  const token = localStorage.getItem("token");
+
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+}
+
+// 🔐 Get predictions for logged-in user
 export async function fetchPredictions() {
-  const res = await fetch(BASE + "/");
+  const res = await fetch(BASE + "/", {
+    headers: getAuthHeaders(),
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch predictions");
+
   return res.json();
 }
 
-export async function createPrediction(data) {
+// 🔐 Create prediction
+export async function createPrediction(body) {
   const res = await fetch(BASE + "/", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
+    headers: getAuthHeaders(),
+    body: JSON.stringify(body),
   });
+
+  if (!res.ok) throw new Error("Prediction failed");
+
   return res.json();
 }

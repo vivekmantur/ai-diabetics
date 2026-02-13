@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import text
 
 from ..database import SessionLocal
+from ..dependencies import get_current_user  # JWT dependency
 
 router = APIRouter()
 
@@ -15,14 +16,15 @@ def get_db():
         db.close()
 
 
-@router.get("/{phone_number}")
-def get_user_by_phone(phone_number: str, db: Session = Depends(get_db)):
+# 🔐 Get current logged-in user (from JWT)
+@router.get("/me")
+def get_me(
+    db: Session = Depends(get_db),
+    user: dict = Depends(get_current_user),
+):
     result = db.execute(
-        text("SELECT user_id, phone_number FROM users WHERE phone_number = :phone"),
-        {"phone": phone_number}
+        text("SELECT user_id, phone_number FROM users WHERE user_id = :uid"),
+        {"uid": user["user_id"]},
     ).fetchone()
-
-    if not result:
-        raise HTTPException(status_code=404, detail="User not found")
 
     return dict(result._mapping)

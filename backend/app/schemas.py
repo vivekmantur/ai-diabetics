@@ -1,8 +1,9 @@
 from pydantic import BaseModel
 
 
+# ================= Prediction =================
+
 class PredictionCreate(BaseModel):
-    user_id: int
     pregnancies: int
     glucose: int
     blood_pressure: int
@@ -12,10 +13,24 @@ class PredictionCreate(BaseModel):
     diabetes_pedigree: float
     age: int
 
+
+class PredictionResponse(BaseModel):
+    prediction: int
+    probability: float
+
+
+# ================= Chat =================
+
 class ChatRequest(BaseModel):
-    user_id: int
     question: str
 
 
 class ChatResponse(BaseModel):
     answer: str
+
+class LoginRequest(BaseModel):
+    phone: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str

@@ -5,6 +5,7 @@ from sqlalchemy import text
 from ..database import SessionLocal
 from ..schemas import ChatRequest, ChatResponse
 from ..llm import ask_llm
+from ..dependencies import get_current_user   # 🔐 JWT
 
 router = APIRouter()
 
@@ -18,7 +19,11 @@ def get_db():
 
 
 @router.post("/ask", response_model=ChatResponse)
-def ask_chat(data: ChatRequest, db: Session = Depends(get_db)):
+def ask_chat(
+    data: ChatRequest,
+    db: Session = Depends(get_db),
+    user=Depends(get_current_user),   # 🔐 get user from JWT
+):
     """
     RAG:
     Pull latest user predictions → send as context to LLM
@@ -34,7 +39,7 @@ def ask_chat(data: ChatRequest, db: Session = Depends(get_db)):
         ORDER BY timestamp DESC
         LIMIT 5
         """),
-        {"uid": data.user_id}
+        {"uid": user["user_id"]},   # 🔐 use JWT user_id
     ).fetchall()
 
     if not rows:

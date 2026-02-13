@@ -8,3 +8,5 @@ joblib
 xgboost
 groq
 python-dotenv
+python-jose
+passlib[bcrypt]
