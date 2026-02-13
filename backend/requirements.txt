@@ -6,3 +6,5 @@ pydantic
 numpy
 joblib
 xgboost
+groq
+python-dotenv

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
+
 from ..database import SessionLocal
 from .. import crud, schemas
 
@@ -15,7 +16,7 @@ def get_db():
 
 
 @router.get("/")
-def list_predictions(db: Session = Depends(get_db)):
+def read_predictions(db: Session = Depends(get_db)):
     return crud.get_predictions(db)
 
 

@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
+
 class PredictionCreate(BaseModel):
     user_id: int
     pregnancies: int
@@ -10,3 +11,11 @@ class PredictionCreate(BaseModel):
     bmi: float
     diabetes_pedigree: float
     age: int
+
+class ChatRequest(BaseModel):
+    user_id: int
+    question: str
+
+
+class ChatResponse(BaseModel):
+    answer: str

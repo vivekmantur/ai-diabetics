@@ -1,10 +1,28 @@
 version: "3.9"
 
 services:
+  db:
+    image: postgres:15
+    container_name: diabetes_db
+    restart: always
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: diabeticsdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
   app:
     build: .
     container_name: diabetes_app
+    depends_on:
+      - db
     ports:
       - "8000:8000"
-    environment:
-      DATABASE_URL: postgresql://app:admin@192.168.1.81:5432/diabeticsdb
+    env_file:
+      - .env
+
+volumes:
+  pgdata:

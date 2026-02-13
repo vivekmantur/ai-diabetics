@@ -1,0 +1,152 @@
+/* ================= PAGE WRAPPER ================= */
+.login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #020617, #000);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= HEADER ================= */
+.site-header {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 80px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.site-header .logo {
+  font-size: 22px;
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.site-header nav a {
+  margin-left: 30px;
+  color: #cbd5e1;
+  text-decoration: none;
+  font-size: 15px;
+}
+
+/* ================= HERO SECTION ================= */
+.hero {
+  flex: 1;
+
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: center;
+
+  padding: 100px 140px;
+  gap: 80px;
+}
+
+/* LEFT TEXT */
+.hero-left {
+  max-width: 650px;
+}
+
+.hero-left h1 {
+  font-size: 64px;
+  margin-bottom: 28px;
+  color: #38bdf8;
+}
+
+.hero-left p {
+  font-size: 20px;
+  color: #94a3b8;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+/* ================= HUGE LOGIN PANEL ================= */
+.login-card {
+  justify-self: center;
+
+  /* 🔥 DOUBLE SIZE */
+  width: 720px;
+  min-height: 480px;
+
+  background: rgba(255, 255, 255, 0.07);
+  padding: 90px 80px;
+  border-radius: 32px;
+
+  backdrop-filter: blur(22px);
+
+  border: 1px solid rgba(56, 189, 248, 0.35);
+
+  box-shadow:
+    0 0 120px rgba(56, 189, 248, 0.35),
+    inset 0 0 40px rgba(255, 255, 255, 0.05);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 0 160px rgba(56, 189, 248, 0.45),
+    inset 0 0 50px rgba(255, 255, 255, 0.06);
+}
+
+/* CARD TEXT */
+.login-card h2 {
+  font-size: 38px;
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  font-size: 17px;
+  color: #94a3b8;
+  margin-bottom: 34px;
+}
+
+/* INPUT */
+.login-card input {
+  width: 100%;
+  padding: 20px;
+  border-radius: 14px;
+  border: none;
+  margin-bottom: 26px;
+  font-size: 18px;
+  outline: none;
+}
+
+/* BUTTON */
+.login-card button {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+
+  font-weight: 700;
+  font-size: 19px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.login-card button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(56, 189, 248, 0.4);
+}
+
+/* ERROR */
+.error {
+  margin-top: 16px;
+  color: #f87171;
+  font-size: 15px;
+}
+
+/* ================= FOOTER ================= */
+.site-footer {
+  text-align: center;
+  padding: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 14px;
+}

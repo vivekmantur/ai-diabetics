@@ -9,7 +9,7 @@ def get_predictions(db):
 
 
 def create_prediction(db, data):
-    # ---- original 8 features ----
+    # ---- original features ----
     pregnancies = data.pregnancies
     glucose = data.glucose
     blood_pressure = data.blood_pressure
@@ -19,13 +19,12 @@ def create_prediction(db, data):
     diabetes_pedigree = data.diabetes_pedigree
     age = data.age
 
-    # ---- engineered features (MUST match training exactly) ----
+    # ---- engineered features (same as training) ----
     bmi_age = bmi * age
     glucose_bmi = glucose / (bmi + 1)
     insulin_glucose = insulin / (glucose + 1)
     pregnancy_age = pregnancies / (age + 1)
 
-    # ---- final feature vector (12 features total) ----
     features = np.array([[
         pregnancies,
         glucose,
@@ -41,11 +40,9 @@ def create_prediction(db, data):
         pregnancy_age
     ]])
 
-    # ---- model prediction ----
     prediction = int(model.predict(features)[0])
     probability = float(model.predict_proba(features)[0][1])
 
-    # ---- insert into DB ----
     db.execute(text("""
         INSERT INTO predictions (
             user_id, pregnancies, glucose, blood_pressure, skin_thickness,
@@ -65,7 +62,4 @@ def create_prediction(db, data):
 
     db.commit()
 
-    return {
-        "prediction": prediction,
-        "probability": probability
-    }
+    return {"prediction": prediction, "probability": probability}

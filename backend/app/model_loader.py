@@ -1,5 +1,7 @@
-import joblib
 import os
+import joblib
 
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "diabetes_final_model.pkl")
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+MODEL_PATH = os.path.join(BASE_DIR, "diabetes_final_model.pkl")
+
 model = joblib.load(MODEL_PATH)
