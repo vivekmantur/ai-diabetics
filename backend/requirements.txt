@@ -10,3 +10,4 @@ groq
 python-dotenv
 python-jose
 passlib[bcrypt]
+twilio

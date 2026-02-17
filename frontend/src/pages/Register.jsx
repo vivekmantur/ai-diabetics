@@ -1,40 +1,40 @@
 import { useState } from "react";
-import { requestOtp, verifyOtp } from "../api/authApi";
+import { requestRegisterOtp, registerUser } from "../api/authApi";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import "../styles/login.css";
 
-export default function Login({ onLogin, goToRegister }) {
+export default function Register({ onLogin, goToLogin }) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("phone"); // phone | otp
   const [error, setError] = useState("");
 
-  // ===== Send OTP =====
+  // ===== Send Register OTP =====
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      await requestOtp(phone);
+      await requestRegisterOtp(phone);
       setStep("otp");
     } catch (err) {
-      setError(err.message || "User not found");
+      setError(err.message);
     }
   };
 
-  // ===== Verify OTP =====
-  const handleVerifyOTP = async (e) => {
+  // ===== Verify & Register =====
+  const handleRegister = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const data = await verifyOtp(phone, otp);
+      const data = await registerUser(phone, otp);
 
       localStorage.setItem("token", data.access_token);
       onLogin(data.user);
     } catch (err) {
-      setError(err.message || "Invalid OTP");
+      setError(err.message);
     }
   };
 
@@ -43,20 +43,15 @@ export default function Login({ onLogin, goToRegister }) {
       <Header />
 
       <section className="hero">
-        {/* LEFT SIDE */}
         <div className="hero-left">
-          <h1>Predict Diabetes Early with AI</h1>
-          <p>
-            Monitor health, analyze diabetes risk trends, and take preventive
-            action using AI-powered healthcare.
-          </p>
+          <h1>Create Account</h1>
+          <p>Register to start AI-powered diabetes prediction.</p>
         </div>
 
-        {/* LOGIN CARD */}
         <div className="login-card">
           {step === "phone" ? (
             <>
-              <h2>Login</h2>
+              <h2>Register</h2>
 
               <form onSubmit={handleSendOTP}>
                 <input
@@ -70,16 +65,15 @@ export default function Login({ onLogin, goToRegister }) {
                 <button type="submit">Send OTP</button>
               </form>
 
-              {/* 👉 Register navigation */}
-              <p className="switch-link" onClick={goToRegister}>
-                New user? Create account
+              <p className="switch-link" onClick={goToLogin}>
+                Already have an account? Login
               </p>
             </>
           ) : (
             <>
-              <h2>Enter OTP</h2>
+              <h2>Verify OTP</h2>
 
-              <form onSubmit={handleVerifyOTP}>
+              <form onSubmit={handleRegister}>
                 <input
                   type="text"
                   placeholder="6-digit OTP"
@@ -88,7 +82,7 @@ export default function Login({ onLogin, goToRegister }) {
                   required
                 />
 
-                <button type="submit">Verify & Login</button>
+                <button type="submit">Register & Login</button>
               </form>
             </>
           )}

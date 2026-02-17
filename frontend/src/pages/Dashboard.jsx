@@ -11,24 +11,30 @@ import TestModal from "../components/TestModal";
 import { fetchPredictions } from "../api/predictApi";
 import "../styles/dashboard.css";
 
-export default function Dashboard({ user }) {
+export default function Dashboard({ user, onLogout }) {
   const [latest, setLatest] = useState(null);
   const [history, setHistory] = useState([]);
   const [openModal, setOpenModal] = useState(false);
 
-  // Fetch predictions
+  // 🔐 Fetch predictions for logged-in user (JWT already applied in API)
   useEffect(() => {
-    fetchPredictions().then((all) => {
-      const userData = all.filter((p) => p.user_id === user.user_id);
-      setHistory(userData);
-      if (userData.length) setLatest(userData[0]);
-    });
-  }, [user.user_id, openModal]); // refresh after modal closes
+    const loadData = async () => {
+      try {
+        const userData = await fetchPredictions(); // already filtered in backend
+        setHistory(userData);
+        if (userData.length) setLatest(userData[0]);
+      } catch (err) {
+        console.error("Failed to fetch predictions:", err);
+      }
+    };
+
+    loadData();
+  }, [openModal]); // refresh after new test
 
   return (
     <div className="dashboard-page">
-      {/* HEADER */}
-      <Header />
+      {/* HEADER with logout */}
+      <Header user={user} onLogout={onLogout} />
 
       {/* DASHBOARD BODY */}
       <div className="dashboard">

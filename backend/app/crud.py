@@ -103,3 +103,12 @@ def create_prediction(db, data, user_id: int):
     db.commit()
 
     return {"prediction": prediction, "probability": probability}
+
+def create_user(db, phone: str):
+    db.execute(
+        text("INSERT INTO users (phone_number) VALUES (:phone)"),
+        {"phone": phone},
+    )
+    db.commit()
+
+    return get_user_by_phone(db, phone)
