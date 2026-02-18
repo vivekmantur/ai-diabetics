@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 import random
 import os
 
@@ -27,16 +27,28 @@ class PhoneRequest(BaseModel):
     phone: str
 
 
+class RegisterRequest(BaseModel):
+    phone: str
+    email: EmailStr   # ✅ NEW
+
+
 class OTPVerifyRequest(BaseModel):
     phone: str
     otp: str
 
 
+class RegisterVerifyRequest(BaseModel):
+    phone: str
+    email: EmailStr   # ✅ NEW
+    otp: str
+
+
 # ================= Helper =================
-def generate_and_send_otp(phone: str):
+def generate_and_send_otp(phone: str, email: str):
     otp = str(random.randint(100000, 999999))
     store_otp(phone, otp, int(os.getenv("OTP_EXPIRE_SECONDS", 300)))
-    send_otp(phone, otp)
+    send_otp(email, otp)   # ✅ send to EMAIL
+
 
 
 # ============================================================
@@ -52,7 +64,9 @@ def request_login_otp(data: PhoneRequest, db: Session = Depends(get_db)):
             detail="User not found"
         )
 
-    generate_and_send_otp(data.phone)
+    generate_and_send_otp(data.phone, user["email"])
+
+
 
     return {"message": "OTP sent successfully"}
 
@@ -76,8 +90,7 @@ def verify_login_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
             detail="User not found"
         )
 
-    # 🔒 delete OTP after success (important security fix)
-    otp_db.pop(data.phone, None)
+    otp_db.pop(data.phone, None)  # 🔒 delete OTP after success
 
     token = create_access_token({"user_id": user["user_id"]})
 
@@ -92,7 +105,7 @@ def verify_login_otp(data: OTPVerifyRequest, db: Session = Depends(get_db)):
 # 🆕 REGISTER — Send OTP ONLY if user NOT exists
 # ============================================================
 @router.post("/register-otp")
-def request_register_otp(data: PhoneRequest, db: Session = Depends(get_db)):
+def request_register_otp(data: RegisterRequest, db: Session = Depends(get_db)):
 
     user = get_user_by_phone(db, data.phone)
     if user:
@@ -101,16 +114,17 @@ def request_register_otp(data: PhoneRequest, db: Session = Depends(get_db)):
             detail="User already exists"
         )
 
-    generate_and_send_otp(data.phone)
+    generate_and_send_otp(data.phone, data.email)
+
 
     return {"message": "Registration OTP sent"}
 
 
 # ============================================================
-# 🆕 REGISTER — Verify OTP and create user
+# 🆕 REGISTER — Verify OTP and create user (WITH EMAIL)
 # ============================================================
 @router.post("/register")
-def register_user(data: OTPVerifyRequest, db: Session = Depends(get_db)):
+def register_user(data: RegisterVerifyRequest, db: Session = Depends(get_db)):
 
     if not verify_otp(data.phone, data.otp):
         raise HTTPException(
@@ -118,7 +132,7 @@ def register_user(data: OTPVerifyRequest, db: Session = Depends(get_db)):
             detail="Invalid or expired OTP"
         )
 
-    # 🔎 double-check user doesn't exist (race condition safety)
+    # 🔎 safety check
     existing_user = get_user_by_phone(db, data.phone)
     if existing_user:
         raise HTTPException(
@@ -126,9 +140,9 @@ def register_user(data: OTPVerifyRequest, db: Session = Depends(get_db)):
             detail="User already exists"
         )
 
-    user = create_user(db, data.phone)
+    # ✅ create user with email
+    user = create_user(db, data.phone, data.email)
 
-    # 🔒 delete OTP after success
     otp_db.pop(data.phone, None)
 
     token = create_access_token({"user_id": user["user_id"]})

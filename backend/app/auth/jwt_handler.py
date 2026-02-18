@@ -1,9 +1,9 @@
 from datetime import datetime, timedelta
 from jose import jwt, JWTError
 
-SECRET_KEY = "super-secret-key-change-this"
+SECRET_KEY = "f5c4ec45416b27934a18c21095cb8411db84eb98bab12b40c9ef1bc1b245adb6"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 2
 
 
 def create_access_token(data: dict):

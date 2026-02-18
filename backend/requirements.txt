@@ -11,3 +11,5 @@ python-dotenv
 python-jose
 passlib[bcrypt]
 twilio
+aiosmtplib
+email-validator

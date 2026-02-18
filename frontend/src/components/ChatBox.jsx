@@ -9,6 +9,7 @@ export default function ChatBox() {
   const [input, setInput] = useState("");
   const bottomRef = useRef(null);
 
+  // ===== Send message =====
   const sendMessage = async () => {
     if (!input.trim()) return;
 
@@ -16,12 +17,10 @@ export default function ChatBox() {
     setMessages((m) => [...m, userMsg]);
 
     try {
-      // 🔐 uses JWT automatically from chatApi.js
       const data = await askChat(input);
-
       const botMsg = { role: "ai", text: data.answer };
       setMessages((m) => [...m, botMsg]);
-    } catch (err) {
+    } catch {
       const errorMsg = { role: "ai", text: "❌ Failed to get AI response." };
       setMessages((m) => [...m, errorMsg]);
     }
@@ -29,7 +28,10 @@ export default function ChatBox() {
     setInput("");
   };
 
-  // auto scroll
+  // ===== Clear chat =====
+  const clearChat = () => setMessages([]);
+
+  // ===== Auto scroll =====
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
@@ -37,21 +39,28 @@ export default function ChatBox() {
   return (
     <div className="chatbox-wrapper">
       <div className="chatbox">
-        <h3>AI Diabetes Coach</h3>
+        {/* HEADER */}
+        <div className="chat-header">
+          <h3>AI Diabetes Coach</h3>
 
+          {messages.length > 0 && (
+            <button className="clear-btn" onClick={clearChat}>
+              Clear
+            </button>
+          )}
+        </div>
+
+        {/* MESSAGES */}
         <div className="chat-messages">
           {messages.map((m, i) => (
             <div key={i} className={`msg ${m.role}`}>
-              {m.role === "ai" ? (
-                <ReactMarkdown>{m.text}</ReactMarkdown>
-              ) : (
-                m.text
-              )}
+              {m.role === "ai" ? <ReactMarkdown>{m.text}</ReactMarkdown> : m.text}
             </div>
           ))}
           <div ref={bottomRef} />
         </div>
 
+        {/* INPUT */}
         <div className="chat-input">
           <input
             placeholder="Ask about diet, glucose, BMI..."

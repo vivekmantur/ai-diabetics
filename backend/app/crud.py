@@ -8,7 +8,11 @@ from .model_loader import model
 # ============================================================
 def get_user_by_phone(db, phone: str):
     result = db.execute(
-        text("SELECT user_id, phone_number FROM users WHERE phone_number = :phone"),
+        text("""
+            SELECT user_id, phone_number, email
+            FROM users
+            WHERE phone_number = :phone
+        """),
         {"phone": phone},
     ).fetchone()
 
@@ -104,11 +108,29 @@ def create_prediction(db, data, user_id: int):
 
     return {"prediction": prediction, "probability": probability}
 
-def create_user(db, phone: str):
+def create_user(db, phone: str, email: str):
+    # prevent duplicate phone OR email
+    existing = db.execute(
+        text("""
+            SELECT user_id
+            FROM users
+            WHERE phone_number = :phone OR email = :email
+        """),
+        {"phone": phone, "email": email},
+    ).fetchone()
+
+    if existing:
+        return None
+
     db.execute(
-        text("INSERT INTO users (phone_number) VALUES (:phone)"),
-        {"phone": phone},
+        text("""
+            INSERT INTO users (phone_number, email)
+            VALUES (:phone, :email)
+        """),
+        {"phone": phone, "email": email},
     )
     db.commit()
 
     return get_user_by_phone(db, phone)
+
+

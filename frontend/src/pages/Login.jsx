@@ -9,17 +9,21 @@ export default function Login({ onLogin, goToRegister }) {
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState("phone"); // phone | otp
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   // ===== Send OTP =====
   const handleSendOTP = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       await requestOtp(phone);
       setStep("otp");
     } catch (err) {
       setError(err.message || "User not found");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -27,6 +31,7 @@ export default function Login({ onLogin, goToRegister }) {
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       const data = await verifyOtp(phone, otp);
@@ -35,7 +40,26 @@ export default function Login({ onLogin, goToRegister }) {
       onLogin(data.user);
     } catch (err) {
       setError(err.message || "Invalid OTP");
+    } finally {
+      setLoading(false);
     }
+  };
+
+  // ===== Resend OTP =====
+  const handleResend = async () => {
+    setError("");
+    try {
+      await requestOtp(phone);
+    } catch (err) {
+      setError(err.message || "Failed to resend OTP");
+    }
+  };
+
+  // ===== Go back to phone step =====
+  const goBack = () => {
+    setStep("phone");
+    setOtp("");
+    setError("");
   };
 
   return (
@@ -67,7 +91,9 @@ export default function Login({ onLogin, goToRegister }) {
                   required
                 />
 
-                <button type="submit">Send OTP</button>
+                <button type="submit" disabled={loading}>
+                  {loading ? "Sending..." : "Send OTP"}
+                </button>
               </form>
 
               {/* 👉 Register navigation */}
@@ -88,8 +114,20 @@ export default function Login({ onLogin, goToRegister }) {
                   required
                 />
 
-                <button type="submit">Verify & Login</button>
+                <button type="submit" disabled={loading}>
+                  {loading ? "Verifying..." : "Verify & Login"}
+                </button>
               </form>
+
+              {/* 🔁 Resend OTP */}
+              <p className="switch-link" onClick={handleResend}>
+                Resend OTP
+              </p>
+
+              {/* ⬅ Back */}
+              <p className="switch-link" onClick={goBack}>
+                Change phone number
+              </p>
             </>
           )}
 

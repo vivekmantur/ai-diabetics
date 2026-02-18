@@ -1,18 +1,42 @@
 import os
-from twilio.rest import Client
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 
-ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
-AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
-FROM_WHATSAPP = os.getenv("TWILIO_WHATSAPP_NUMBER")
+SMTP_SERVER = os.getenv("SMTP_SERVER")
+SMTP_PORT = int(os.getenv("SMTP_PORT", 587))
+EMAIL_USER = os.getenv("EMAIL_USER")
+EMAIL_PASS = os.getenv("EMAIL_PASS")
 
-client = Client(ACCOUNT_SID, AUTH_TOKEN)
 
+def send_otp(email: str, otp: str):
+    subject = "Your AI Diabetes OTP"
+    body = f"""
+Hello,
 
-def send_otp(phone: str, otp: str):
-    message = client.messages.create(
-        body=f"Your AI Diabetes OTP is: {otp}",
-        from_=FROM_WHATSAPP,
-        to=f"whatsapp:+91{phone}",
-    )
+Your OTP for AI Diabetes login is: {otp}
 
-    return message.sid
+This OTP will expire in 5 minutes.
+
+If you did not request this, please ignore.
+
+Regards,
+AI Diabetes Team
+"""
+
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL_USER
+    msg["To"] = email
+    msg["Subject"] = subject
+    msg.attach(MIMEText(body, "plain"))
+
+    try:
+        server = smtplib.SMTP(SMTP_SERVER, SMTP_PORT)
+        server.starttls()
+        server.login(EMAIL_USER, EMAIL_PASS)
+        server.send_message(msg)
+        server.quit()
+        return True
+    except Exception as e:
+        print("❌ Email OTP sending failed:", e)
+        return False
