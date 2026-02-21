@@ -1,22 +1,40 @@
 import "../styles/login.css";
 import logo from "../assets/logo.png";
 
-export default function Header({ user, onLogout }) {
+export default function Header({
+  user,
+  onLogout,
+  onTestClick,
+  onDietClick
+}) {
   return (
     <header className="site-header">
-      {/* LEFT SIDE LOGO */}
-      <div className="logo-wrapper">
-        <div className="logo-box">
-          <img src={logo} alt="Cognine Logo" />
-        </div>
-        <span className="app-title">AI Diabetes Predictor</span>
+      
+      {/* LEFT - LOGO */}
+      <div className="logo-box">
+        <img src={logo} alt="Cognine Logo" />
       </div>
 
-      {/* RIGHT SIDE */}
+      {/* CENTER - TITLE */}
+      <div className="header-title">
+        AI Diabetes Predictor
+      </div>
+
+      {/* RIGHT - BUTTONS */}
       {user && (
-        <button className="logout-btn" onClick={onLogout}>
-          Logout
-        </button>
+        <div className="header-actions">
+          <button className="header-btn" onClick={onTestClick}>
+            Take Diabetes Test
+          </button>
+
+          <button className="header-btn" onClick={onDietClick}>
+            Get Diet Plan
+          </button>
+
+          <button className="header-btn logout" onClick={onLogout}>
+            Logout
+          </button>
+        </div>
       )}
     </header>
   );

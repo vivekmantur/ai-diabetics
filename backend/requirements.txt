@@ -5,7 +5,7 @@ psycopg2-binary
 pydantic
 numpy
 joblib
-xgboost
+xgboost==1.7.6
 groq
 python-dotenv
 python-jose

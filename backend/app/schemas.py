@@ -13,6 +13,15 @@ class PredictionCreate(BaseModel):
     diabetes_pedigree: float
     age: int
 
+    # NEW clinical answers
+    glucose_symptoms: bool | None = None
+    obesity_history: bool | None = None
+    sedentary_lifestyle: bool | None = None
+    sleep_apnea: bool | None = None
+    weight_loss_attempts: bool | None = None
+    pcos: bool | None = None
+    gender: str | None = None
+
 
 class PredictionResponse(BaseModel):
     prediction: int

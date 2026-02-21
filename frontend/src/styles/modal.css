@@ -56,3 +56,203 @@
 .close-btn:hover {
   color: #ef4444;
 }
+.yesno {
+  margin-top: 10px;
+}
+
+.yesno-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.yesno-buttons button {
+  padding: 8px 18px;
+  border-radius: 10px;
+  border: 1px solid #334155;
+  background: #020617;
+  color: #cbd5e1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.yesno-buttons button:hover {
+  border-color: #38bdf8;
+  color: #38bdf8;
+}
+
+/* ✅ SELECTED STATE */
+.yesno-buttons button.active {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(56, 189, 248, 0.7);
+  transform: scale(1.05);
+}
+
+
+.form-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.field label {
+  display: block;
+  margin-bottom: 6px;
+  color: #cbd5e1;
+  font-size: 14px;
+}
+
+.field input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #1e293b;
+  background: #020617;
+  color: white;
+}
+.modal-card {
+  width: 900px;
+  max-width: 95%;
+  max-height: 90vh;      /* 🔥 limit height */
+  overflow-y: auto;      /* 🔥 enable scroll */
+}
+/* prediction modal specific */
+.prediction-modal {
+  width: 600px;
+}
+
+/* summary section */
+.prediction-summary {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.probability-value {
+  font-size: 40px;
+  font-weight: 700;
+  margin: 10px 0;
+}
+
+/* grid */
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px 20px;
+}
+
+.detail-label {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.detail-value {
+  font-size: 15px;
+  font-weight: 600;
+}
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.detail-label {
+  color: #94a3b8;
+}
+
+.detail-value {
+  font-weight: 600;
+}
+/* ===== DIET MODAL ===== */
+
+.diet-modal {
+  width: 700px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+.diet-content {
+  background: #0f1b2d;
+  padding: 20px;
+  border-radius: 14px;
+  line-height: 1.6;
+  font-size: 15px;
+}
+
+/* Headings */
+.diet-content h1,
+.diet-content h2,
+.diet-content h3 {
+  color: #38bdf8;
+  margin-top: 18px;
+}
+
+/* Lists */
+.diet-content ul {
+  padding-left: 20px;
+}
+
+.diet-content li {
+  margin-bottom: 6px;
+}
+
+/* Sections spacing */
+.diet-content p {
+  margin-bottom: 10px;
+}
+
+/* Download button */
+.modal-actions {
+  margin-top: 18px;
+  text-align: right;
+}
+
+.download-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+  padding: 10px 16px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.download-btn:hover {
+  opacity: 0.9;
+}
+/* 2 Column Grid Layout */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px 24px;
+  align-items: start;
+}
+
+/* Make button full width */
+.full-width {
+  grid-column: span 2;
+}
+
+/* Fix field layout */
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Yes/No button group */
+.yesno-buttons {
+  display: flex;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* Active button style */
+.yesno-buttons button.active {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: #020617;
+  border-color: transparent;
+  box-shadow: 0 0 10px rgba(56, 189, 248, 0.6);
+  transform: scale(1.05);
+}

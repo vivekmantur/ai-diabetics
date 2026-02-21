@@ -43,6 +43,8 @@ def get_predictions(db, user_id: int):
 # 🔐 Create prediction using JWT user_id (NOT frontend)
 # ============================================================
 def create_prediction(db, data, user_id: int):
+
+    # ========= ML CORE FEATURES =========
     pregnancies = data.pregnancies
     glucose = data.glucose
     blood_pressure = data.blood_pressure
@@ -52,13 +54,13 @@ def create_prediction(db, data, user_id: int):
     diabetes_pedigree = data.diabetes_pedigree
     age = data.age
 
-    # ---- engineered features ----
+    # ========= engineered features =========
     bmi_age = bmi * age
     glucose_bmi = glucose / (bmi + 1)
     insulin_glucose = insulin / (glucose + 1)
     pregnancy_age = pregnancies / (age + 1)
 
-    features = np.array([[
+    features = np.array([[  
         pregnancies,
         glucose,
         blood_pressure,
@@ -73,19 +75,27 @@ def create_prediction(db, data, user_id: int):
         pregnancy_age
     ]])
 
+    # ========= ML prediction =========
     prediction = int(model.predict(features)[0])
     probability = float(model.predict_proba(features)[0][1])
 
+    # ========= INSERT ALL DATA =========
     db.execute(
         text("""
             INSERT INTO predictions (
-                user_id, pregnancies, glucose, blood_pressure, skin_thickness,
+                user_id,
+                pregnancies, glucose, blood_pressure, skin_thickness,
                 insulin, bmi, diabetes_pedigree, age,
+                glucose_symptoms, obesity_history, sedentary_lifestyle,
+                sleep_apnea, weight_loss_attempts, pcos, gender,
                 prediction_result, probability
             )
             VALUES (
-                :user_id, :pregnancies, :glucose, :blood_pressure, :skin_thickness,
+                :user_id,
+                :pregnancies, :glucose, :blood_pressure, :skin_thickness,
                 :insulin, :bmi, :diabetes_pedigree, :age,
+                :glucose_symptoms, :obesity_history, :sedentary_lifestyle,
+                :sleep_apnea, :weight_loss_attempts, :pcos, :gender,
                 :prediction_result, :probability
             )
         """),
@@ -99,6 +109,16 @@ def create_prediction(db, data, user_id: int):
             "bmi": bmi,
             "diabetes_pedigree": diabetes_pedigree,
             "age": age,
+
+            # NEW clinical values
+            "glucose_symptoms": data.glucose_symptoms,
+            "obesity_history": data.obesity_history,
+            "sedentary_lifestyle": data.sedentary_lifestyle,
+            "sleep_apnea": data.sleep_apnea,
+            "weight_loss_attempts": data.weight_loss_attempts,
+            "pcos": data.pcos,
+            "gender": data.gender,
+
             "prediction_result": prediction,
             "probability": probability,
         },

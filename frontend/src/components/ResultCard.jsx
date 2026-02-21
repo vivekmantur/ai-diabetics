@@ -1,6 +1,6 @@
-export default function ResultCard({ p }) {
+export default function ResultCard({ p, onClick }) {
   return (
-    <div className="result-card">
+    <div className="result-card clickable" onClick={onClick}>
       <h4 className={p.prediction_result ? "red" : "green"}>
         {p.prediction_result ? "Diabetic" : "Healthy"}
       </h4>

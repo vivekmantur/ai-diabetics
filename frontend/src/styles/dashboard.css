@@ -6,8 +6,6 @@
   width: 100%;
 }
 
-
-
 .sidebar h3 {
   font-size: 18px;
   margin-bottom: 16px;
@@ -123,14 +121,17 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 /* Layout 3-column */
+/* ===== 3 COLUMN LAYOUT ===== */
 .dashboard {
   display: grid;
-  grid-template-columns: 380px 0.9fr 480px; /* ⭐ 30% wider sides */
-  height: calc(100vh - 70px);
-  gap: 10px; /* small breathing space */
-  flex: 1;
+  grid-template-columns: 380px 1fr 420px;  /* ⭐ updated widths */
+  gap: 20px;
+  min-height: calc(100vh - 120px);
 }
-
+.center {
+  display: flex;
+  flex-direction: column;
+}
 /* RIGHT PANEL */
 .right-panel {
   padding: 30px;
@@ -288,3 +289,40 @@
   width: 80%;
   max-width: 900px;
 }
+/* Scrollable history sidebar */
+.history-scroll {
+  max-height: 70vh;        /* limits height */
+  overflow-y: auto;        /* enables vertical scroll */
+  padding-right: 6px;      /* space for scrollbar */
+}
+
+/* Optional: custom scrollbar styling */
+.history-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.history-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.history-scroll::-webkit-scrollbar-thumb {
+  background: #38bdf8;
+  border-radius: 10px;
+}
+/* make history scrollable */
+.history-scroll {
+  max-height: 70vh;
+  overflow-y: auto;
+  padding-right: 6px;
+}
+
+.result-card.clickable {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.result-card.clickable:hover {
+  transform: translateY(-2px) scale(1.01);
+  box-shadow: 0 0 18px rgba(56, 189, 248, 0.25);
+}
+
