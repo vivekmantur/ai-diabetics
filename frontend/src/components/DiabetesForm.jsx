@@ -3,37 +3,58 @@ import { createPrediction } from "../api/predictApi";
 import "../styles/modal.css";
 
 export default function DiabetesForm({ userId, onSuccess }) {
-  const [form, setForm] = useState({});
+
+  // ================= SAFE INITIAL STATE =================
+  const [form, setForm] = useState({
+    gender: "male",
+    pregnancies: 0,
+    glucose: "",
+    blood_pressure: "",
+    skin_thickness: "",
+    insulin: "",
+    bmi: "",
+    diabetes_pedigree: "",
+    age: "",
+  });
+
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
 
+  // ================= SAFE NUMBER PARSER =================
+  const num = (v) => (v === "" || v === undefined ? 0 : Number(v));
+
+  // ================= CHANGE HANDLER =================
   const change = (name, value) => {
     setForm((prev) => {
       const updated = { ...prev, [name]: value };
 
+      // male cannot have pregnancies or pcos
       if (name === "gender" && value === "male") {
-        delete updated.pregnancies;
-        delete updated.pcos;
+        updated.pregnancies = 0;
+        updated.pcos = "no";
       }
 
       return updated;
     });
   };
 
+  // ================= SUBMIT =================
   const submit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await createPrediction({
-        pregnancies: form.gender === "male" ? 0 : form.pregnancies || 0,
-        glucose: Number(form.glucose),
-        blood_pressure: Number(form.blood_pressure),
-        skin_thickness: Number(form.skin_thickness),
-        insulin: Number(form.insulin),
-        bmi: Number(form.bmi),
-        diabetes_pedigree: Number(form.diabetes_pedigree),
-        age: Number(form.age),
+      const payload = {
+        pregnancies:
+          form.gender === "male" ? 0 : num(form.pregnancies),
+
+        glucose: num(form.glucose),
+        blood_pressure: num(form.blood_pressure),
+        skin_thickness: num(form.skin_thickness),
+        insulin: num(form.insulin),
+        bmi: num(form.bmi),
+        diabetes_pedigree: num(form.diabetes_pedigree),
+        age: num(form.age),
 
         glucose_symptoms: form.glucoseSymptoms === "yes",
         obesity_history: form.obesityHistory === "yes",
@@ -42,100 +63,98 @@ export default function DiabetesForm({ userId, onSuccess }) {
         weight_loss_attempts: form.weightLossAttempts === "yes",
         pcos: form.pcos === "yes",
         gender: form.gender,
-      });
+      };
+
+      console.log("Sending payload:", payload);
+
+      const res = await createPrediction(payload);
 
       setResult(res);
+
       if (onSuccess) setTimeout(onSuccess, 1500);
+
     } catch (err) {
-      console.error("Prediction failed:", err);
+      console.error("Prediction failed:", err.message);
+      alert(err.message);
     } finally {
       setLoading(false);
     }
   };
 
+  // ================= RESULT VIEW =================
   if (result) {
     return (
       <div className="prediction-result">
         <h3 className={result.prediction ? "red" : "green"}>
-          {result.prediction ? "High Diabetes Risk" : "Low Diabetes Risk"}
+          {result.prediction
+            ? "High Diabetes Risk"
+            : "Low Diabetes Risk"}
         </h3>
-        <p>Probability: {(result.probability * 100).toFixed(1)}%</p>
+
+        <p>
+          Probability: {(result.probability * 100).toFixed(1)}%
+        </p>
       </div>
     );
   }
 
+  // ================= FORM =================
   return (
     <form className="form-grid" onSubmit={submit}>
 
-      {/* ROW 1: Age + Gender */}
-      <Input
-        label="Age"
+      <Input label="Age"
         value={form.age}
-        onChange={(v) => change("age", v)}
-      />
+        onChange={(v) => change("age", v)} />
 
       <SelectGender
         value={form.gender}
         onChange={(v) => change("gender", v)}
       />
 
-      {/* BASE FIELDS */}
-      <Input
-        label="Glucose"
+      <Input label="Glucose"
         value={form.glucose}
-        onChange={(v) => change("glucose", v)}
-      />
+        onChange={(v) => change("glucose", v)} />
 
-      <Input
-        label="Blood Pressure"
+      <Input label="Blood Pressure"
         value={form.blood_pressure}
-        onChange={(v) => change("blood_pressure", v)}
-      />
+        onChange={(v) => change("blood_pressure", v)} />
 
-      <Input
-        label="Skin Thickness"
+      <Input label="Skin Thickness"
         value={form.skin_thickness}
-        onChange={(v) => change("skin_thickness", v)}
-      />
+        onChange={(v) => change("skin_thickness", v)} />
 
-      <Input
-        label="Insulin"
+      <Input label="Insulin"
         value={form.insulin}
-        onChange={(v) => change("insulin", v)}
-      />
+        onChange={(v) => change("insulin", v)} />
 
-      <Input
-        label="BMI"
+      <Input label="BMI"
         value={form.bmi}
-        onChange={(v) => change("bmi", v)}
-      />
+        onChange={(v) => change("bmi", v)} />
 
-      <Input
-        label="Diabetes Pedigree"
+      <Input label="Diabetes Pedigree"
         step="0.01"
         value={form.diabetes_pedigree}
-        onChange={(v) => change("diabetes_pedigree", v)}
-      />
+        onChange={(v) => change("diabetes_pedigree", v)} />
 
-      {/* CONDITIONAL QUESTIONS AT END */}
-
+      {/* FEMALE ONLY */}
       {form.gender === "female" && (
-        <Input
-          label="Pregnancies"
-          value={form.pregnancies}
-          onChange={(v) => change("pregnancies", v)}
-        />
+        <>
+          <Input
+            label="Pregnancies"
+            value={form.pregnancies}
+            onChange={(v) => change("pregnancies", v)}
+          />
+
+          <YesNo
+            label="Do you have PCOS?"
+            value={form.pcos}
+            onChange={(v) => change("pcos", v)}
+          />
+        </>
       )}
 
-      {form.gender === "female" && (
-        <YesNo
-          label="Do you have PCOS?"
-          value={form.pcos}
-          onChange={(v) => change("pcos", v)}
-        />
-      )}
-
-      {Number(form.glucose) > 140 && (
+      {/* GLUCOSE QUESTIONS */}
+      {num(form.glucose) > 140 && (
         <YesNo
           label="Excessive thirst or fatigue?"
           value={form.glucoseSymptoms}
@@ -143,7 +162,8 @@ export default function DiabetesForm({ userId, onSuccess }) {
         />
       )}
 
-      {Number(form.bmi) > 30 && (
+      {/* BMI QUESTIONS */}
+      {num(form.bmi) > 30 && (
         <>
           <YesNo
             label="History of obesity?"
@@ -184,7 +204,7 @@ export default function DiabetesForm({ userId, onSuccess }) {
   );
 }
 
-/* ================== Helper Components ================== */
+/* ================= COMPONENTS ================= */
 
 function Input({ label, value, onChange, step }) {
   return (
@@ -205,6 +225,7 @@ function YesNo({ label, value, onChange }) {
   return (
     <div className="field">
       <label>{label}</label>
+
       <div className="yesno-buttons">
         <button
           type="button"
@@ -230,6 +251,7 @@ function SelectGender({ value, onChange }) {
   return (
     <div className="field">
       <label>Gender</label>
+
       <div className="yesno-buttons">
         <button
           type="button"

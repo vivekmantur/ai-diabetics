@@ -1,9 +1,40 @@
+"""
+Application Configuration
+
+Loads environment variables required for the backend
+application such as database and external API credentials.
+"""
+
 import os
-from dotenv import load_dotenv
 from pathlib import Path
+from dotenv import load_dotenv
 
-# load .env from backend folder
-load_dotenv()
 
-GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-DATABASE_URL = os.getenv("DATABASE_URL")
+# ==============================
+# Load Environment Variables
+# ==============================
+
+# Resolve project root directory
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load .env explicitly from project root/backend folder
+load_dotenv(BASE_DIR / ".env")
+
+
+# ==============================
+# Environment Variables
+# ==============================
+
+GROQ_API_KEY: str | None = os.getenv("GROQ_API_KEY")
+DATABASE_URL: str | None = os.getenv("DATABASE_URL")
+
+
+# ==============================
+# Validation (Fail Fast)
+# ==============================
+
+if not GROQ_API_KEY:
+    raise ValueError("GROQ_API_KEY is not set in environment variables.")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL is not set in environment variables.")

@@ -1,22 +1,82 @@
-from datetime import datetime, timedelta
+"""
+JWT Authentication Utilities
+
+This module handles JWT token creation and verification
+for user authentication.
+"""
+
+from datetime import datetime, timedelta, timezone
+from typing import Optional, Dict, Any
+
 from jose import jwt, JWTError
 
+# ==============================
+# Configuration Constants
+# ==============================
+
+# NOTE:
+# In production, load SECRET_KEY from environment variables
 SECRET_KEY = "f5c4ec45416b27934a18c21095cb8411db84eb98bab12b40c9ef1bc1b245adb6"
+
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 2
+ACCESS_TOKEN_EXPIRE_MINUTES = 120
 
 
-def create_access_token(data: dict):
+# ==============================
+# Token Creation
+# ==============================
+
+def create_access_token(data: Dict[str, Any]) -> str:
+    """
+    Create a JWT access token.
+
+    Args:
+        data (Dict[str, Any]): Payload data to encode in token.
+
+    Returns:
+        str: Encoded JWT access token.
+    """
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+
+    # Create expiration timestamp (UTC timezone-aware)
+    expire = datetime.now(timezone.utc) + timedelta(
+        minutes=ACCESS_TOKEN_EXPIRE_MINUTES
+    )
+
     to_encode.update({"exp": expire})
 
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(
+        to_encode,
+        SECRET_KEY,
+        algorithm=ALGORITHM
+    )
+
+    return encoded_jwt
 
 
-def verify_token(token: str):
+# ==============================
+# Token Verification
+# ==============================
+
+def verify_token(token: str) -> Optional[Dict[str, Any]]:
+    """
+    Verify and decode a JWT token.
+
+    Args:
+        token (str): JWT token string.
+
+    Returns:
+        Optional[Dict[str, Any]]:
+            Decoded payload if valid, otherwise None.
+    """
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(
+            token,
+            SECRET_KEY,
+            algorithms=[ALGORITHM]
+        )
         return payload
+
     except JWTError:
+        # Token invalid, expired, or corrupted
         return None

@@ -1,5 +1,8 @@
+// src/api/predictApi.js
+
 const BASE = "http://localhost:8000/predict";
 
+// ================= AUTH HEADER =================
 function getAuthHeaders() {
   const token = localStorage.getItem("token");
 
@@ -9,18 +12,23 @@ function getAuthHeaders() {
   };
 }
 
-// 🔐 Get predictions for logged-in user
+// ================= GET HISTORY =================
 export async function fetchPredictions() {
   const res = await fetch(BASE + "/", {
     headers: getAuthHeaders(),
   });
 
-  if (!res.ok) throw new Error("Failed to fetch predictions");
+  const data = await res.json();
 
-  return res.json();
+  if (!res.ok) {
+    console.error("Fetch predictions error:", data);
+    throw new Error(data.detail || "Failed to fetch predictions");
+  }
+
+  return data;
 }
 
-// 🔐 Create prediction
+// ================= CREATE PREDICTION =================
 export async function createPrediction(body) {
   const res = await fetch(BASE + "/", {
     method: "POST",
@@ -28,7 +36,21 @@ export async function createPrediction(body) {
     body: JSON.stringify(body),
   });
 
-  if (!res.ok) throw new Error("Prediction failed");
+  const data = await res.json();
 
-  return res.json();
+  if (!res.ok) {
+    console.error("Backend error:", data);
+
+    // ⭐ Extract FastAPI validation message
+    if (data.detail) {
+      if (Array.isArray(data.detail)) {
+        throw new Error(data.detail.map(e => e.msg).join(", "));
+      }
+      throw new Error(data.detail);
+    }
+
+    throw new Error("Prediction failed");
+  }
+
+  return data;
 }

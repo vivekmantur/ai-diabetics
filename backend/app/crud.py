@@ -1,12 +1,27 @@
+"""
+Repository Layer (CRUD Operations)
+
+Handles database interactions for users and predictions.
+"""
+
+from typing import Optional, Dict, List, Any
 from sqlalchemy import text
+import logging
 import numpy as np
+
 from .model_loader import model
 
 
+logger = logging.getLogger(__name__)
+
+
 # ============================================================
-# 🔐 AUTH — get user by phone
+# AUTH — Get user by phone
 # ============================================================
-def get_user_by_phone(db, phone: str):
+
+def get_user_by_phone(db, phone: str) -> Optional[Dict[str, Any]]:
+    """Fetch user by phone number."""
+
     result = db.execute(
         text("""
             SELECT user_id, phone_number, email
@@ -16,19 +31,28 @@ def get_user_by_phone(db, phone: str):
         {"phone": phone},
     ).fetchone()
 
-    if not result:
-        return None
-
-    return dict(result._mapping)
+    return dict(result._mapping) if result else None
 
 
 # ============================================================
-# 🔐 Get predictions ONLY for logged-in user
+# Predictions — Fetch User Predictions
 # ============================================================
-def get_predictions(db, user_id: int):
+
+def get_predictions(db, user_id: int) -> List[Dict[str, Any]]:
+    """Return predictions belonging to a specific user."""
+
     result = db.execute(
         text("""
-            SELECT *
+            SELECT
+                user_id,
+                pregnancies,
+                glucose,
+                blood_pressure,
+                bmi,
+                age,
+                prediction_result,
+                probability,
+                timestamp
             FROM predictions
             WHERE user_id = :uid
             ORDER BY timestamp DESC
@@ -40,11 +64,18 @@ def get_predictions(db, user_id: int):
 
 
 # ============================================================
-# 🔐 Create prediction using JWT user_id (NOT frontend)
+# Predictions — Create Prediction
 # ============================================================
-def create_prediction(db, data, user_id: int):
 
-    # ========= ML CORE FEATURES =========
+def create_prediction(db, data, user_id: int) -> Dict[str, float]:
+    """
+    Generate ML prediction and store result in database.
+    """
+
+    # ==============================
+    # Core Features
+    # ==============================
+
     pregnancies = data.pregnancies
     glucose = data.glucose
     blood_pressure = data.blood_pressure
@@ -54,13 +85,16 @@ def create_prediction(db, data, user_id: int):
     diabetes_pedigree = data.diabetes_pedigree
     age = data.age
 
-    # ========= engineered features =========
+    # ==============================
+    # Feature Engineering
+    # ==============================
+
     bmi_age = bmi * age
     glucose_bmi = glucose / (bmi + 1)
     insulin_glucose = insulin / (glucose + 1)
     pregnancy_age = pregnancies / (age + 1)
 
-    features = np.array([[  
+    features = np.array([[
         pregnancies,
         glucose,
         blood_pressure,
@@ -72,14 +106,22 @@ def create_prediction(db, data, user_id: int):
         bmi_age,
         glucose_bmi,
         insulin_glucose,
-        pregnancy_age
+        pregnancy_age,
     ]])
 
-    # ========= ML prediction =========
+    # ==============================
+    # ML Prediction
+    # ==============================
+
     prediction = int(model.predict(features)[0])
     probability = float(model.predict_proba(features)[0][1])
 
-    # ========= INSERT ALL DATA =========
+    logger.info("Prediction generated for user_id=%s", user_id)
+
+    # ==============================
+    # Database Insert
+    # ==============================
+
     db.execute(
         text("""
             INSERT INTO predictions (
@@ -110,14 +152,13 @@ def create_prediction(db, data, user_id: int):
             "diabetes_pedigree": diabetes_pedigree,
             "age": age,
 
-            # NEW clinical values
-            "glucose_symptoms": data.glucose_symptoms,
-            "obesity_history": data.obesity_history,
-            "sedentary_lifestyle": data.sedentary_lifestyle,
-            "sleep_apnea": data.sleep_apnea,
-            "weight_loss_attempts": data.weight_loss_attempts,
-            "pcos": data.pcos,
-            "gender": data.gender,
+            "glucose_symptoms": getattr(data, "glucose_symptoms", False),
+            "obesity_history": getattr(data, "obesity_history", False),
+            "sedentary_lifestyle": getattr(data, "sedentary_lifestyle", False),
+            "sleep_apnea": getattr(data, "sleep_apnea", False),
+            "weight_loss_attempts": getattr(data, "weight_loss_attempts", False),
+            "pcos": getattr(data, "pcos", False),
+            "gender": getattr(data, "gender", "unknown"),
 
             "prediction_result": prediction,
             "probability": probability,
@@ -126,10 +167,19 @@ def create_prediction(db, data, user_id: int):
 
     db.commit()
 
-    return {"prediction": prediction, "probability": probability}
+    return {
+        "prediction": prediction,
+        "probability": probability,
+    }
 
-def create_user(db, phone: str, email: str):
-    # prevent duplicate phone OR email
+
+# ============================================================
+# Users — Create User
+# ============================================================
+
+def create_user(db, phone: str, email: str) -> Optional[Dict[str, Any]]:
+    """Create a new user if phone/email not already registered."""
+
     existing = db.execute(
         text("""
             SELECT user_id
@@ -149,8 +199,7 @@ def create_user(db, phone: str, email: str):
         """),
         {"phone": phone, "email": email},
     )
+
     db.commit()
 
     return get_user_by_phone(db, phone)
-
-
