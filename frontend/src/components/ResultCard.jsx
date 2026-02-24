@@ -1,10 +1,12 @@
-export default function ResultCard({ p }) {
+export default function ResultCard({ p, onClick }) {
   return (
-    <div style={{ border: "1px solid #ccc", margin: 10, padding: 10 }}>
-      <p>User: {p.user_id}</p>
-      <p>Prediction: {p.prediction_result === 1 ? "Diabetic" : "Not Diabetic"}</p>
-      <p>Probability: {p.probability}</p>
-      <p>Date: {p.timestamp}</p>
+    <div className="result-card clickable" onClick={onClick}>
+      <h4 className={p.prediction_result ? "red" : "green"}>
+        {p.prediction_result ? "Diabetic" : "Healthy"}
+      </h4>
+
+      <p>Probability: {(p.probability * 100).toFixed(1)}%</p>
+      <small>{new Date(p.timestamp).toLocaleString()}</small>
     </div>
   );
 }

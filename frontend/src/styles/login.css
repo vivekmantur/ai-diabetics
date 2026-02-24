@@ -1,0 +1,237 @@
+/* ================= PAGE WRAPPER ================= */
+.login-page {
+  min-height: 100vh;
+  background: radial-gradient(circle at top, #020617, #000);
+  color: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= HEADER ================= */
+.site-header {
+  height: 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 80px;
+
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+
+  position: relative;
+}
+
+/* LOGO */
+.logo-box {
+  background: #ffffff;
+  padding: 10px 22px;
+  border-radius: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.25);
+}
+
+.logo-box img {
+  height: 36px;
+  width: auto;
+}
+
+/* CENTER TITLE */
+.header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 22px;
+  font-weight: 600;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+/* BUTTON CONTAINER */
+.header-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* COMMON BUTTON STYLE */
+.header-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.header-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* LOGOUT BUTTON (Different Color) */
+.header-btn.logout {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+}
+
+.header-btn.logout:hover {
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
+}
+
+/* CENTER TITLE */
+.app-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  font-size: 22px;
+  font-weight: 600;
+  color: #38bdf8;
+  letter-spacing: 0.5px;
+}
+
+/* RIGHT SIDE BUTTONS */
+.header-actions {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+}
+
+/* COMMON BUTTON STYLE */
+.logout-btn {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+.logout-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+}
+
+/* ================= HERO SECTION ================= */
+.hero {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  align-items: center;
+  padding: 100px 140px;
+  gap: 80px;
+}
+
+/* LEFT TEXT */
+.hero-left {
+  max-width: 650px;
+}
+
+.hero-left h1 {
+  font-size: 64px;
+  margin-bottom: 28px;
+  color: #38bdf8;
+}
+
+.hero-left p {
+  font-size: 20px;
+  color: #94a3b8;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+/* ================= LOGIN PANEL ================= */
+.login-card {
+  justify-self: center;
+  width: 720px;
+  min-height: 480px;
+
+  background: rgba(255, 255, 255, 0.07);
+  padding: 90px 80px;
+  border-radius: 32px;
+
+  backdrop-filter: blur(22px);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+
+  box-shadow:
+    0 0 120px rgba(56, 189, 248, 0.35),
+    inset 0 0 40px rgba(255, 255, 255, 0.05);
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+  transform: translateY(-10px);
+  box-shadow:
+    0 0 160px rgba(56, 189, 248, 0.45),
+    inset 0 0 50px rgba(255, 255, 255, 0.06);
+}
+
+/* CARD TEXT */
+.login-card h2 {
+  font-size: 38px;
+  margin-bottom: 14px;
+}
+
+.subtitle {
+  font-size: 17px;
+  color: #94a3b8;
+  margin-bottom: 34px;
+}
+
+/* INPUT */
+.login-card input {
+  width: 100%;
+  padding: 20px;
+  border-radius: 14px;
+  border: none;
+  margin-bottom: 26px;
+  font-size: 18px;
+  outline: none;
+}
+
+/* BUTTON */
+.login-card button {
+  width: 100%;
+  padding: 18px;
+  border: none;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+
+  font-weight: 700;
+  font-size: 19px;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+.login-card button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 14px 34px rgba(56, 189, 248, 0.4);
+}
+
+/* ERROR */
+.error {
+  margin-top: 16px;
+  color: #f87171;
+  font-size: 15px;
+}
+
+/* ================= FOOTER ================= */
+.site-footer {
+  text-align: center;
+  padding: 22px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  color: #94a3b8;
+  font-size: 14px;
+}
