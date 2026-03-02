@@ -123,7 +123,6 @@ Provide:
         open={openDietModal}
         onClose={() => setOpenDietModal(false)}
         content={dietContent}
-        onDownload={handleDownload}
       />
 
       <Footer />
