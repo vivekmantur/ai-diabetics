@@ -48,8 +48,20 @@ def get_predictions(db, user_id: int) -> List[Dict[str, Any]]:
                 pregnancies,
                 glucose,
                 blood_pressure,
+                skin_thickness,
+                insulin,
                 bmi,
+                diabetes_pedigree,
                 age,
+                gender,
+
+                glucose_symptoms,
+                obesity_history,
+                sedentary_lifestyle,
+                sleep_apnea,
+                weight_loss_attempts,
+                pcos,
+
                 prediction_result,
                 probability,
                 timestamp
@@ -61,7 +73,6 @@ def get_predictions(db, user_id: int) -> List[Dict[str, Any]]:
     )
 
     return [dict(row._mapping) for row in result]
-
 
 # ============================================================
 # Predictions — Create Prediction
