@@ -6,6 +6,7 @@ import RiskPanel from "../components/RiskPanel";
 import TrendChart from "../components/TrendChart";
 import ChatBox from "../components/ChatBox";
 import TestModal from "../components/TestModal";
+import ShapCard from "../components/ShapCard";
 import DietPlanModal from "../components/DietPlanModal";
 import { fetchPredictions } from "../api/predictApi";
 import { askChat } from "../api/chatApi";
@@ -108,6 +109,7 @@ Provide:
         <aside className="right-panel">
           <RiskPanel latest={latest} />
           <TrendChart data={history} />
+          <ShapCard latest={latest} />   
         </aside>
       </div>
 

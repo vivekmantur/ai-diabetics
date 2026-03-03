@@ -8,6 +8,7 @@ from typing import Optional, Dict, List, Any
 from sqlalchemy import text
 import logging
 import numpy as np
+import shap
 
 from .model_loader import model
 
@@ -39,7 +40,9 @@ def get_user_by_phone(db, phone: str) -> Optional[Dict[str, Any]]:
 # ============================================================
 
 def get_predictions(db, user_id: int) -> List[Dict[str, Any]]:
-    """Return predictions belonging to a specific user."""
+    """Return predictions belonging to a specific user.
+       Compute SHAP only for the latest prediction.
+    """
 
     result = db.execute(
         text("""
@@ -72,7 +75,85 @@ def get_predictions(db, user_id: int) -> List[Dict[str, Any]]:
         {"uid": user_id},
     )
 
-    return [dict(row._mapping) for row in result]
+    rows = [dict(row._mapping) for row in result]
+
+    # If no predictions → return directly
+    if not rows:
+        return rows
+
+    # ==============================
+    # Compute SHAP only for latest
+    # ==============================
+
+    latest = rows[0]
+
+    pregnancies = latest["pregnancies"]
+    glucose = latest["glucose"]
+    blood_pressure = latest["blood_pressure"]
+    skin_thickness = latest["skin_thickness"]
+    insulin = latest["insulin"]
+    bmi = latest["bmi"]
+    diabetes_pedigree = latest["diabetes_pedigree"]
+    age = latest["age"]
+
+    # Same feature engineering as POST
+    bmi_age = bmi * age
+    glucose_bmi = glucose / (bmi + 1)
+    insulin_glucose = insulin / (glucose + 1)
+    pregnancy_age = pregnancies / (age + 1)
+
+    features = np.array([[ 
+        pregnancies,
+        glucose,
+        blood_pressure,
+        skin_thickness,
+        insulin,
+        bmi,
+        diabetes_pedigree,
+        age,
+        bmi_age,
+        glucose_bmi,
+        insulin_glucose,
+        pregnancy_age,
+    ]])
+    # ==============================
+    # SHAP computation (XGBoost 3 SAFE MODE)
+    # ==============================
+
+    def model_predict(data):
+        return model.predict_proba(data)[:, 1]
+
+    # Background sample (very small for speed)
+    background = np.zeros((1, features.shape[1]))
+
+    explainer = shap.KernelExplainer(model_predict, background)
+
+    shap_values = explainer.shap_values(features, nsamples=50)
+
+    feature_names = [
+        "pregnancies",
+        "glucose",
+        "blood_pressure",
+        "skin_thickness",
+        "insulin",
+        "bmi",
+        "diabetes_pedigree",
+        "age",
+        "bmi_age",
+        "glucose_bmi",
+        "insulin_glucose",
+        "pregnancy_age",
+    ]
+
+    shap_dict = {
+        feature_names[i]: float(shap_values[0][i])
+        for i in range(len(feature_names))
+    }
+
+    latest["shap_values"] = shap_dict
+
+    return rows
+
 
 # ============================================================
 # Predictions — Create Prediction

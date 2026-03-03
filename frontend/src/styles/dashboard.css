@@ -326,3 +326,71 @@
   box-shadow: 0 0 18px rgba(56, 189, 248, 0.25);
 }
 
+/* ================= SHAP CARD ================= */
+
+.shap-card {
+  margin-top: 20px;
+  background: #0f1c2e;
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.shap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.expand-btn {
+  background: #1f6feb;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+
+.expand-btn:hover {
+  opacity: 0.85;
+}
+
+.shap-content {
+  margin-top: 16px;
+}
+
+.shap-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.feature {
+  width: 140px;
+  font-size: 12px;
+}
+
+.bar-wrapper {
+  flex: 1;
+  height: 10px;
+  background: #1a2b45;
+  border-radius: 6px;
+  margin: 0 10px;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 6px;
+}
+
+.bar.positive {
+  background: #ff4d4f;   /* increases risk */
+}
+
+.bar.negative {
+  background: #52c41a;   /* reduces risk */
+}
+
+.value {
+  width: 60px;
+  font-size: 12px;
+}
